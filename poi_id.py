@@ -6,6 +6,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
+from sklearn.grid_search import GridSearchCV
 import sys
 import pickle
 sys.path.append("../tools/")
@@ -126,6 +127,18 @@ clf_pipe_tree_std = Pipeline([('scaler_std', scaler_std),
                               ('pca', pca_tree),
                               ('tree', tree_2)])
 
+# GridSearchCV used for PCA + DecisionTree
+pca_gs = PCA()
+tree_3 = tree.DecisionTreeClassifier(random_state = 10)
+pipe_tree_gs = Pipeline([('pca_gs', pca_gs),
+                         ('tree', tree_3)])
+parameters = {'pca_gs__n_components':[1, 2, 3],
+              'tree__criterion': ['gini', 'entropy'],
+              'tree__min_samples_split': [2, 3, 4]}
+clf_pipe_tree_gs = GridSearchCV(pipe_tree_gs,
+                                parameters,
+                                scoring = 'recall')
+
 
 ### SVM algorithm
 from sklearn import svm
@@ -169,7 +182,7 @@ clf_AdaBoost = AdaBoostClassifier(n_estimators = 25,
                                   random_state = 10)
 
 # PCA + Adaboost
-pca_Adaboost = PCA(n_components = 5) 
+pca_Adaboost = PCA(n_components = 2) 
 adaboost = AdaBoostClassifier(n_estimators = 3,
                               algorithm = 'SAMME.R',
                               random_state = 10)
@@ -182,9 +195,9 @@ clf_pipe_Adaboost = Pipeline([('pca', pca_Adaboost),
 ### shuffle split cross validation. For more info: 
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
-test_classifier(clf_pipe_tree, my_dataset, features_list)
+test_classifier(clf_pipe_Adaboost, my_dataset, features_list)
 
 ### Dump your classifier, dataset, and features_list so 
 ### anyone can run/check your results.
 
-dump_classifier_and_data(clf_pipe_tree, my_dataset, features_list)
+dump_classifier_and_data(clf_pipe_Adaboost, my_dataset, features_list)
