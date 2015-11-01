@@ -195,9 +195,9 @@ clf_pipe_Adaboost = Pipeline([('pca', pca_Adaboost),
 ### shuffle split cross validation. For more info: 
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
-test_classifier(clf_pipe_Adaboost, my_dataset, features_list)
+test_classifier(clf_pipe_tree, my_dataset, features_list)
 
 ### Dump your classifier, dataset, and features_list so 
 ### anyone can run/check your results.
 
-dump_classifier_and_data(clf_pipe_Adaboost, my_dataset, features_list)
+dump_classifier_and_data(clf_pipe_tree, my_dataset, features_list)
