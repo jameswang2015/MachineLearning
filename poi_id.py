@@ -5,6 +5,7 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.pipeline import Pipeline
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 import sys
 import pickle
 sys.path.append("../tools/")
@@ -67,14 +68,13 @@ all_features.insert(0, 'poi')
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, all_features, sort_keys = True)
 labels, features = targetFeatureSplit(data)
-selection = SelectKBest(k = 5)
+selection = SelectKBest(k = 3)
 selection.fit(features, labels)
 # get_support indices need to add 1 to skip 'poi' which is the 1st element in all_features.
 features_list = [all_features[i] for i in selection.get_support(indices=True)+1]
 # here is the features_list selected by applying SelectKBest():
-# features_list = ['poi', 'bonus', 'total_stock_value', 'ratio_to_poi', 'salary', 
-#                  'exercised_stock_options']
-print 'The Features selected by SelectKBest(k = 5) are: \n', features_list
+# features_list = ['poi', 'bonus', 'total_stock_value', 'exercised_stock_options']
+print 'The Features selected by SelectKBest(k = 3) are: \n', features_list
 print 'The selection.scores_ is: \n', selection.scores_
 ### adding 'poi' as the 1st element in features_list before fed into feature_format
 features_list.insert(0, 'poi')
@@ -108,25 +108,41 @@ Hence, this is my final algorithm used for this project. By default, this is the
 altorighm that's input into the final tester.py function.
 '''
 pca_tree = PCA(n_components = 2)
-tree = tree.DecisionTreeClassifier(criterion = 'gini', 
-                                   min_samples_split = 2, 
-                                   random_state = 10)
+tree_1 = tree.DecisionTreeClassifier(criterion = 'gini', 
+                                     min_samples_split = 2, 
+                                     random_state = 10)
 clf_pipe_tree = Pipeline([('pca', pca_tree),
-                          ('tree', tree)])
+                          ('tree', tree_1)])
+                          
+# Standardization + PCA + DecisionTree
+# feature is normalized prior to PCA processing
+# StandardScaler is used as feature normalization
+scaler_std = StandardScaler()
+pca_tree = PCA(n_components = 2)
+tree_2 = tree.DecisionTreeClassifier(criterion = 'gini', 
+                                     min_samples_split = 2, 
+                                     random_state = 10)
+clf_pipe_tree_std = Pipeline([('scaler_std', scaler_std),
+                              ('pca', pca_tree),
+                              ('tree', tree_2)])
 
 
 ### SVM algorithm
 from sklearn import svm
 # MinMaxScaler is used for feature scaling
-scaler = MinMaxScaler()
+scaler_svm = MinMaxScaler()
 svc = svm.SVC(kernel = 'sigmoid',C = 16, gamma = 0.2)
-clf_pipe_SVM = Pipeline([('scaler', scaler),
+clf_pipe_SVM = Pipeline([('scaler_svc', scaler_svm),
                          ('svc', svc)])
 
               
 ### K nearest neighbors
+# MinMaxScaler is used for feature scaling
 from sklearn import neighbors
-clf_KNeighbors = neighbors.KNeighborsClassifier(3, weights = 'uniform')
+scaler_knn = MinMaxScaler()
+knn = neighbors.KNeighborsClassifier(3, weights = 'uniform')
+clf_pipe_knn = Pipeline([('scaler_knn', scaler_knn),
+                         ('knn', knn)])
 
 
 ### RandomForest
