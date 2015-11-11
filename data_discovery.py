@@ -12,6 +12,8 @@ from sklearn import tree
 from sklearn.cross_validation import StratifiedShuffleSplit
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.grid_search import GridSearchCV
+from time import time
 
 
 PERF_FORMAT_STRING = "\

@@ -144,11 +144,14 @@ clf_pipe_tree_gs = GridSearchCV(pipe_tree_gs,
 from sklearn import svm
 # MinMaxScaler is used for feature scaling
 scaler_svm = MinMaxScaler()
-svc = svm.SVC(kernel = 'sigmoid',C = 16, gamma = 0.2)
+svc = svm.SVC(kernel = 'rbf',
+              gamma = 0,
+              tol = 0.01,
+              class_weight = {False: 1, True: 8})
 clf_pipe_SVM = Pipeline([('scaler_svc', scaler_svm),
                          ('svc', svc)])
 
-              
+ 
 ### K nearest neighbors
 # MinMaxScaler is used for feature scaling
 from sklearn import neighbors
